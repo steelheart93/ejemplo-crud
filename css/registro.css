@@ -1,0 +1,54 @@
+#footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+#atras, #adelante {
+    position: absolute;
+    top: 5px;
+    left: 50vw;
+}
+
+#atras, #adelante {
+    margin-top: 25px;
+    width: 130px;
+}
+
+#atras {
+    margin-left: 100px;
+}
+
+#adelante {
+    margin-left: 250px;
+}
+
+iframe {
+    width: 100%;
+    height: 100px;
+}
+
+/*INICIO, table with scroll*/
+
+table tbody {
+    display: block;
+    max-height: 350px;
+    overflow-y: scroll;
+}
+
+table thead, table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.index {
+    width: 75px;
+}
+
+.date {
+    width: 300px;
+}
+
+/*FIN, table with scroll*/
