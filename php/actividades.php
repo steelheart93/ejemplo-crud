@@ -1,28 +1,34 @@
 <?php
 include "conexion.php";
 
-$consulta = $_GET["consulta"];
-
-
-// Si la consulta es la opcion de listar
 $conexionbd = conectar_bd();
-$query = "SELECT id, ruta, nombre FROM emisoras";
+if (isset($_GET["create"])) {
+    $json = json_decode($_GET["create"]);
+    $query = "INSERT INTO actividades (fecha, actividad) VALUES ('$json->fecha', '$json->actividad');";
+    $mensaje = (mysqli_query($conexionbd, $query)) ? "exito en create" : "error en create";
+    echo $mensaje, " de la tabla actividades";
+} else if (isset($_GET["read"])) {
+    $query = "SELECT llave, fecha, actividad FROM actividades ORDER BY llave DESC";
+    $resultado = mysqli_query($conexionbd, $query);
 
-mysqli_query($conexionbd, "SET NAMES 'utf8'");
-$resultado = mysqli_query($conexionbd, $query);
+    $json = [];
+    while ($fila = mysqli_fetch_assoc($resultado)) {
+        $llave = $fila['llave'];
+        $fecha = $fila['fecha'];
+        $actividad = $fila['actividad'];
 
-$json = [];
-while ($fila = mysqli_fetch_assoc($resultado)) {
-    $id = $fila['id'];
-    $ruta = $fila['ruta'];
-    $nombre = $fila['nombre'];
+        $objeto['llave'] = $llave;
+        $objeto['fecha'] = $fecha;
+        $objeto['actividad'] = $actividad;
 
-    $objeto['id'] = $id;
-    $objeto['ruta'] = $ruta;
-    $objeto['nombre'] = $nombre;
-
-    array_push($json, $objeto);
+        array_push($json, $objeto);
+    }
+    echo json_encode($json);
+} else if (isset($_GET["update"])) {
+    echo "update";
+} else if (isset($_GET["delete"])) {
+    echo "delete";
+} else {
+    echo "Error en el CRUD de Actividades";
 }
-echo json_encode($json);
-
 mysqli_close($conexionbd);

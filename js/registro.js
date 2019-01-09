@@ -1,20 +1,12 @@
 $(function () {
-    var info;
+    var activity;
     var indice = 0;
     var objetos = [];
     var f = new Date();
     var dias = new Array("Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado");
     var fecha = dias[f.getDay()] + " " + f.toLocaleDateString() + ", " + f.toTimeString() + ".";
 
-    objetos.sort(function (a, b) {
-        return b.i - a.i;
-    });
-
-    objetos.forEach(function (json) {
-        var html = `<tr> <td class='index'>${json.i}</td> <td class='date'>${json.key}</td> <td>${json.value}</td> </tr>`;
-        document.getElementById("tbody").innerHTML += html;
-    });
-
+    read();
     $("#date").text(fecha);
 
     $("#eliminar").click(function () {
@@ -59,13 +51,16 @@ $(function () {
 
     $("#registrar").click(function () {
         if (confirm("¿Desea registrar la actividad de hoy?")) {
-            while (info == null) {
-                info = prompt("Actividad & Observaciones");
+            while (activity == null) {
+                activity = prompt("Actividad & Observaciones");
             }
             var date = dias[f.getDay()] + " " + f.toLocaleDateString() + ", " + f.toLocaleTimeString();
             date = prompt("Fecha & Hora", date);
 
-            localStorage.setItem(date, JSON.stringify({ i: localStorage.length + 1, value: info }));
+            var json = { "fecha": date, "actividad": activity };
+            var cadena = JSON.stringify(json);
+
+            create(cadena);
             location.reload();
         } else {
             alert("¡Sí no lo intentas la probabilidad de fallar es del 100%!");
@@ -103,6 +98,31 @@ function cargarMusic() {
 
     promesaEmisoras.fail(function (respuesta) {
         alert("¡Error en promesaEmisoras!");
+        console.log(respuesta);
+    });
+}
+
+function create(cadenaJSON) {
+    $.get("php/actividades.php", { "create": cadenaJSON }, function (respuesta) {
+        alert(respuesta);
+    });
+}
+
+function read() {
+    var promesaRead = $.get("php/actividades.php", "read");
+
+    promesaRead.done(function (respuesta) {
+        var json = JSON.parse(respuesta);
+
+        for (activity of json) {
+            var html = `<tr> <td class='index'>${activity.llave}</td>`;
+            html += `<td class='date'>${activity.fecha}</td> <td>${activity.actividad}</td> </tr>`;
+            document.getElementById("tbody").innerHTML += html;
+        }
+    });
+
+    promesaRead.fail(function (respuesta) {
+        alert("¡Error en promesaRead!");
         console.log(respuesta);
     });
 }

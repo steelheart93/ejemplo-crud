@@ -13,12 +13,12 @@
     <script src="js/registro.js"></script>
 </head>
 
-<body style="background-color: whitesmoke;">
+<body>
     <br>
     <div class="container">
-        <span style="margin-left: 5%; font-weight: bold;">Fecha & Hora: </span>
-        <span id="date" style="font-weight: normal;"></span>
-        <span style="margin-left: 10%; vertical-align: top;">
+        <a href="http://localhost/phpmyadmin/" target="_blank" title="Abrir phpMyAdmin">Fecha & Hora:</a>
+        <span id="date"></span>
+        <span id="botones">
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-secondary" id="eliminar">Eliminar</button>
                 <button type="button" class="btn btn-primary" id="modificar">Modificar</button>
@@ -27,8 +27,8 @@
         </span>
 
         <br><br>
-        <table id="example" class="table table-bordered table-striped table-dark">
-            <thead class="bg-danger" style="text-align: center;">
+        <table class="table table-bordered table-striped table-dark">
+            <thead class="bg-danger">
                 <th class="index">#</th>
                 <th class="date">Fecha & Hora</th>
                 <th>Actividad & Observaciones</th>

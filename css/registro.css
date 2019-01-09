@@ -52,3 +52,23 @@ table thead, table tbody tr {
 }
 
 /*FIN, table with scroll*/
+
+a {
+    margin-left: 5%;
+    font-weight: bold;
+    margin-right: 10px;
+    text-decoration-line: underline;
+}
+
+#botones {
+    margin-left: 10%;
+    vertical-align: top;
+}
+
+body {
+    background-color: whitesmoke;
+}
+
+thead {
+    text-align: center;
+}
