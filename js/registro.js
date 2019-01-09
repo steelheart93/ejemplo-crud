@@ -1,12 +1,11 @@
 $(function () {
     var activity;
     var indice = 0;
-    var objetos = [];
     var f = new Date();
     var dias = new Array("Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado");
     var fecha = dias[f.getDay()] + " " + f.toLocaleDateString() + ", " + f.toTimeString() + ".";
 
-    read();
+    readAll();
     $("#date").text(fecha);
 
     $("#eliminar").click(function () {
@@ -37,23 +36,26 @@ $(function () {
 
     $("#modificar").click(function () {
         var index = prompt("INDEX", "#");
-        var key = "";
+        
+        alert(read(index));
 
-        Object.keys(localStorage).forEach(function (clave) {
-            var json = JSON.parse(localStorage.getItem(clave));
-            if (index == json.i) key = clave;
-        });
 
-        var valor = prompt("Modificar", JSON.parse(localStorage.getItem(key)).value);
-        localStorage.setItem(key, JSON.stringify({ i: index, value: valor }));
-        location.reload();
+        //date = prompt("Fecha & Hora", date);
+        //activity = prompt("Actividad & Observaciones", activity);
+
+        //var json = { "llave": index, "fecha": date, "actividad": activity };
+        //var cadena = JSON.stringify(json);
+
+        //update(cadena);
+        //location.reload();
     });
 
     $("#registrar").click(function () {
         if (confirm("¿Desea registrar la actividad de hoy?")) {
-            while (activity == null) {
+            while (activity == null || activity == "") {
                 activity = prompt("Actividad & Observaciones");
             }
+
             var date = dias[f.getDay()] + " " + f.toLocaleDateString() + ", " + f.toLocaleTimeString();
             date = prompt("Fecha & Hora", date);
 
@@ -108,10 +110,19 @@ function create(cadenaJSON) {
     });
 }
 
-function read() {
-    var promesaRead = $.get("php/actividades.php", "read");
+function read(llave) {
+    var r;
+    $.get("php/actividades.php", { "read": llave }, function (respuesta) {
+        r = respuesta;
+    });
 
-    promesaRead.done(function (respuesta) {
+    return r;
+}
+
+function readAll() {
+    var promesaReadAll = $.get("php/actividades.php", "readAll");
+
+    promesaReadAll.done(function (respuesta) {
         var json = JSON.parse(respuesta);
 
         for (activity of json) {
@@ -121,8 +132,14 @@ function read() {
         }
     });
 
-    promesaRead.fail(function (respuesta) {
-        alert("¡Error en promesaRead!");
+    promesaReadAll.fail(function (respuesta) {
+        alert("¡Error en promesaReadAll!");
         console.log(respuesta);
+    });
+}
+
+function update(cadenaJSON) {
+    $.get("php/actividades.php", { "update": cadenaJSON }, function (respuesta) {
+        alert(respuesta);
     });
 }
