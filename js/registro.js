@@ -1,12 +1,14 @@
 $(function () {
-    var activity;
     var indice = 0;
-    var f = new Date();
-    var dias = new Array("Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado");
-    var fecha = dias[f.getDay()] + " " + f.toLocaleDateString() + ", " + f.toTimeString() + ".";
 
     _readAll();
-    $("#date").text(fecha);
+    cargarMusic();
+    setInterval(function () {
+        var f = new Date();
+        var fecha = dias[f.getDay()] + " " + f.toLocaleDateString() + ", " + f.toTimeString() + ".";
+        $("#date").text(fecha);
+    }, 1000);
+
 
     $("#eliminar").click(function () {
         var index = prompt("INDEX OR TRUNCATE", "# OR TRUNCATE");
@@ -15,7 +17,7 @@ $(function () {
         } else {
             _delete(index);
         }
-        location.reload();
+        _readAll();
     });
 
     $("#modificar").click(function () {
@@ -32,24 +34,26 @@ $(function () {
             var cadena = JSON.stringify(json);
 
             _update(cadena);
-            location.reload();
+            _readAll();
         });
     });
 
     $("#registrar").click(function () {
         if (confirm("¿Desea registrar la actividad de hoy?")) {
-            while (activity == null || activity == "") {
+            var activity = "";
+            while (activity == "") {
                 activity = prompt("Actividad & Observaciones");
             }
 
-            var date = dias[f.getDay()] + " " + f.toLocaleDateString() + ", " + f.toLocaleTimeString();
+            var d = new Date();
+            var date = dias[d.getDay()] + " " + d.toLocaleDateString() + ", " + d.toLocaleTimeString();
             date = prompt("Fecha & Hora", date);
 
             var json = { "fecha": date, "actividad": activity };
             var cadena = JSON.stringify(json);
 
             _create(cadena);
-            location.reload();
+            _readAll();
         } else {
             alert("¡Sí no lo intentas la probabilidad de fallar es del 100%!");
         }
@@ -68,11 +72,11 @@ $(function () {
     if (!navigator.onLine) {
         $("#atras, #adelante").css("display", "none");
     }
-
-    cargarMusic();
 });
 
 var music = [];
+var dias = new Array("Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado");
+
 function cargarMusic() {
     var promesaEmisoras = $.get("php/emisoras.php");
 
@@ -102,22 +106,26 @@ function _read(llave) {
 }
 
 function _readAll() {
-    var promesaReadAll = $.get("php/actividades.php", "readAll");
+    setTimeout(function () {
+        var promesaReadAll = $.get("php/actividades.php", "readAll");
 
-    promesaReadAll.done(function (respuesta) {
-        var json = JSON.parse(respuesta);
+        promesaReadAll.done(function (respuesta) {
+            var json = JSON.parse(respuesta);
 
-        for (activity of json) {
-            var html = `<tr> <td class='index'>${activity.llave}</td>`;
-            html += `<td class='date'>${activity.fecha}</td> <td>${activity.actividad}</td> </tr>`;
-            document.getElementById("tbody").innerHTML += html;
-        }
-    });
+            var html = "";
+            for (activity of json) {
+                html += `<tr> <td class='index'>${activity.llave}</td>`;
+                html += `<td class='date'>${activity.fecha}</td>`
+                html += ` <td>${activity.actividad}</td> </tr>`;
+            }
+            document.getElementById("tbody").innerHTML = html;
+        });
 
-    promesaReadAll.fail(function (respuesta) {
-        alert("¡Error en promesaReadAll!");
-        console.log(respuesta);
-    });
+        promesaReadAll.fail(function (respuesta) {
+            alert("¡Error en promesaReadAll!");
+            console.log(respuesta);
+        });
+    }, 1000);
 }
 
 function _update(cadenaJSON) {
