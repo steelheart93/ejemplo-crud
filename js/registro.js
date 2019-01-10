@@ -5,49 +5,35 @@ $(function () {
     var dias = new Array("Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado");
     var fecha = dias[f.getDay()] + " " + f.toLocaleDateString() + ", " + f.toTimeString() + ".";
 
-    readAll();
+    _readAll();
     $("#date").text(fecha);
 
     $("#eliminar").click(function () {
-        var index = prompt("INDEX OR CLEAR", "# OR CLEAR");
-        if (index.toLowerCase() == "clear") {
-            localStorage.clear();
+        var index = prompt("INDEX OR TRUNCATE", "# OR TRUNCATE");
+        if (index.toLowerCase() == "truncate") {
+            _deleteAll();
         } else {
-            var key = "";
-
-            Object.keys(localStorage).forEach(function (clave) {
-                var json = JSON.parse(localStorage.getItem(clave));
-                if (index == json.i) key = clave;
-            });
-
-            localStorage.removeItem(key);
-
-            Object.keys(localStorage).forEach(function (clave) {
-                var json = JSON.parse(localStorage.getItem(clave));
-
-                if (index < json.i) {
-                    json.i--;
-                    localStorage.setItem(clave, JSON.stringify(json));
-                }
-            });
+            _delete(index);
         }
         location.reload();
     });
 
     $("#modificar").click(function () {
         var index = prompt("INDEX", "#");
-        
-        alert(read(index));
+        var promesa = _read(index);
 
+        promesa.done(function (respuesta) {
+            var json = JSON.parse(respuesta);
 
-        //date = prompt("Fecha & Hora", date);
-        //activity = prompt("Actividad & Observaciones", activity);
+            var date = prompt("Fecha & Hora", json.fecha);
+            var activity = prompt("Actividad & Observaciones", json.actividad);
 
-        //var json = { "llave": index, "fecha": date, "actividad": activity };
-        //var cadena = JSON.stringify(json);
+            var json = { "llave": index, "fecha": date, "actividad": activity };
+            var cadena = JSON.stringify(json);
 
-        //update(cadena);
-        //location.reload();
+            _update(cadena);
+            location.reload();
+        });
     });
 
     $("#registrar").click(function () {
@@ -62,7 +48,7 @@ $(function () {
             var json = { "fecha": date, "actividad": activity };
             var cadena = JSON.stringify(json);
 
-            create(cadena);
+            _create(cadena);
             location.reload();
         } else {
             alert("¡Sí no lo intentas la probabilidad de fallar es del 100%!");
@@ -104,22 +90,18 @@ function cargarMusic() {
     });
 }
 
-function create(cadenaJSON) {
+function _create(cadenaJSON) {
     $.get("php/actividades.php", { "create": cadenaJSON }, function (respuesta) {
-        alert(respuesta);
+        console.log(respuesta);
     });
 }
 
-function read(llave) {
-    var r;
-    $.get("php/actividades.php", { "read": llave }, function (respuesta) {
-        r = respuesta;
-    });
-
-    return r;
+function _read(llave) {
+    var promesaRead = $.get("php/actividades.php", { "read": llave });
+    return promesaRead;
 }
 
-function readAll() {
+function _readAll() {
     var promesaReadAll = $.get("php/actividades.php", "readAll");
 
     promesaReadAll.done(function (respuesta) {
@@ -138,8 +120,20 @@ function readAll() {
     });
 }
 
-function update(cadenaJSON) {
+function _update(cadenaJSON) {
     $.get("php/actividades.php", { "update": cadenaJSON }, function (respuesta) {
-        alert(respuesta);
+        console.log(respuesta);
+    });
+}
+
+function _delete(llave) {
+    $.get("php/actividades.php", { "delete": llave }, function (respuesta) {
+        console.log(respuesta);
+    });
+}
+
+function _deleteAll() {
+    $.get("php/actividades.php", "deleteAll", function (respuesta) {
+        console.log(respuesta);
     });
 }
